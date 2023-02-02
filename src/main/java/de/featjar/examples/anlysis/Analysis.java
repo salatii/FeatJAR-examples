@@ -7,25 +7,20 @@ import de.featjar.formula.structure.formula.Formula;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Analysis {
     protected static final ExtensionManager extensionManager = new ExtensionManager();
-    private static final List<String> MODEL_NAMES = Arrays.asList( //
-            "basic.xml",
-            "simple.xml",
-            "car.xml",
-            "test.xml"
-    );
+    private static Set<String> MODEL_NAMES = new HashSet<>();
 
     private static Formula loadModel(String filepath) {
         return CommandLineInterface.loadFile(filepath, extensionManager.getExtensionPoint(FormulaFormats.class).get()).orElseThrow();
     }
 
     private static String getPathFromResource(String resource) {
+        resource = "featuremodels/" + resource;
         File file = new File(Analysis.class.getClassLoader().getResource(resource).getPath());
         if (file == null) {
             try {
@@ -45,7 +40,7 @@ public class Analysis {
         String analyze = "";
         while (true) {
             Scanner scanner = new Scanner(System.in);
-            analyze = scanner.nextLine();
+            analyze = scanner.nextLine().toLowerCase().trim();
             switch (analyze) {
                 case "coredead":
                     return new CoreDeadAnalysis().coreFeatures(formula);
@@ -58,13 +53,24 @@ public class Analysis {
         }
     }
 
+    public static Set<String> listFiles(String dir) {
+        return Stream.of(new File(dir).listFiles())
+                .filter(file -> !file.isDirectory())
+                .map(File::getName)
+                .collect(Collectors.toSet());
+    }
+
     public static void main(String[] args) {
+        File file = new File(Analysis.class.getClassLoader().getResource("featuremodels/").getFile());
+        MODEL_NAMES = listFiles(file.getAbsolutePath());
         Scanner scanner = new Scanner(System.in);
         boolean stop = false;
 
         HashMap<Integer, String> featureModelMap = new HashMap<>();
-        for(int i = 0; i < MODEL_NAMES.size(); i++) {
-            featureModelMap.put(i+1, MODEL_NAMES.get(i));
+        int i = 1;
+        for (String entry : MODEL_NAMES) {
+            featureModelMap.put(i, entry);
+            i++;
         }
 
         while(!stop) {
