@@ -8,6 +8,7 @@ __________
 2. [First Steps](#first-steps)
 3. [Usage of Library direct ](#usage-of-library-direct)
 4. [Usage with commandline ](#usage-with-commandline)
+5. [Nice to Know](#Nice-To-Know)
 __________
 
 ## Pre-Knowledge
@@ -208,4 +209,39 @@ java -jar cli/build/libs/cli-*-all.jar --command coredead --input cli/src/test/r
 ```
 ./gradlew :cli:run --args " --command countsharpsat --input src/test/resources/testFeatureModels/car.xml"
 ```
+__________
+
+## Nice To Know
+### Classes for SAT4J Analysis
+Located in: [`package de.featjar.formula.analysis.sat4j`](https://github.com/FeatureIDE/FeatJAR-formula-analysis-sat4j);
+* `AnalyzeCoreDeadVariablesSAT4J`: Queries SAT4J for the number of solutions of a given formula, if any
+* `AnalyzeCountSolutionsSAT4J`: Queries SAT4J for the number of solutions of a given formula, if any
+* `AnalyzeGetSolutionSAT4J`: Queries SAT4J for a solution of a given formula, if any
+* `AnalyzeGetSolutionsSAT4J`: Queries SAT4J for all solutions of a given formula, if any
+* `AnalyzeHasSolutionSAT4J`: Queries SAT4J for whether a given formula has a solution
+
+### Classes for CLI
+Located in: [`package de.featjar.cli`](https://github.com/FeatureIDE/FeatJAR-cli);
+* `AnalysisCommand`: Computes an analysis result for a formula.
+* `SAT4JAnalysisCommand`: is based on AnalysisCommand and is the foundation for all SAT4J Analysis cli commands
+
+Located in: [`package de.featjar.base`](https://github.com/FeatureIDE/FeatJAR-base/tree/main/src/main/java/de/featjar/base/cli);
+* `ArgumentParser`: Parses a list of string arguments.
+* `CLIArgumentParser`: Parses the first argument as a command name and the remaining arguments as options. Whenever an error occurs, it is printed alongside the correct usage and FeatJAR is exited.
+* `Command`: Interface for Commands
+* `CommandLineInterface`:  Helpers for running commands in a command-line interface.
+* `Commands`: Extension point for registering commands.
+* `Option`: 
+
+### IO Actions
+Located in: [`package de.featjar.base`](https://github.com/FeatureIDE/FeatJAR-base);
+* `IO`:  Loads inputs and saves outputs of a Format.
+* `Format`: [BinaryFormat](https://github.com/FeatureIDE/FeatJAR-base/tree/main/src/main/java/de/featjar/base/io/binary), [SerializableObjectFormat](https://github.com/FeatureIDE/FeatJAR-base/tree/main/src/main/java/de/featjar/base/io/binary), [CSVFile](https://github.com/FeatureIDE/FeatJAR-base/blob/main/src/main/java/de/featjar/base/io/csv/CSVFile.java), [XML](https://github.com/FeatureIDE/FeatJAR-base/tree/main/src/main/java/de/featjar/base/io/xml), [StringListFormat](https://github.com/FeatureIDE/FeatJAR-base/tree/main/src/main/java/de/featjar/base/io/list), [GraphVizTreeFormat](https://github.com/FeatureIDE/FeatJAR-base/tree/main/src/main/java/de/featjar/base/io/graphviz)
+* `Formula Format`: [DIMACSFormat](https://github.com/FeatureIDE/FeatJAR-formula/tree/main/src/main/java/de/featjar/formula/io/dimacs), [ExpressionFormat](https://github.com/FeatureIDE/FeatJAR-formula/tree/main/src/main/java/de/featjar/formula/io/textual), [ValueAssignmentListFormat, ValueAssignmentFormat](https://github.com/FeatureIDE/FeatJAR-formula/tree/main/src/main/java/de/featjar/formula/io/value), [KConfigReaderFormat](https://github.com/FeatureIDE/FeatJAR-formula/blob/main/src/main/java/de/featjar/formula/io/KConfigReaderFormat.java)
+
+### Tree structure of formula
+Located in: [`package de.featjar.base`](https://github.com/FeatureIDE/FeatJAR-base/tree/main/src/main/java/de/featjar/base/tree);
+* `Trees`: Traverses and manipulates trees.
+* `TreeVisitor`: Interface for Visits each node of a tree in a depth-first search. Examples [TreePruner](https://github.com/FeatureIDE/FeatJAR-base/blob/main/src/main/java/de/featjar/base/tree/visitor/TreePruner.java), [TreePrinter](https://github.com/FeatureIDE/FeatJAR-base/blob/main/src/main/java/de/featjar/base/tree/visitor/TreePrinter.java), [TreeDepthCounter](https://github.com/FeatureIDE/FeatJAR-base/blob/main/src/main/java/de/featjar/base/tree/visitor/TreeDepthCounter.java)
+
 
