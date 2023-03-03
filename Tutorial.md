@@ -130,6 +130,9 @@ gradlew build
 For further information look at [FeatJAR](https://github.com/FeatureIDE/FeatJAR)
 __________
 ## Usage of Library direct 
+
+In the following, some exemplary applications of the library are shown. These can also be found [here](https://github.com/salatii/FeatJAR-examples/tree/main/src/main/java/de/featjar/examples/anlysis). 
+
 #### load feature model from xml 
 ```
 File file = new File(SimpleExample.class.getClassLoader().getResource("featuremodels/car.xml").getPath();
@@ -205,3 +208,4 @@ java -jar cli/build/libs/cli-*-all.jar --command coredead --input cli/src/test/r
 ```
 ./gradlew :cli:run --args " --command countsharpsat --input src/test/resources/testFeatureModels/car.xml"
 ```
+
