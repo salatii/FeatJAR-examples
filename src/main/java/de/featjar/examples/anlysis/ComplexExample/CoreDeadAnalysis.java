@@ -1,33 +1,39 @@
 package de.featjar.examples.anlysis.ComplexExample;
 
-import de.featjar.base.data.Computation;
-import de.featjar.formula.analysis.bool.ComputeBooleanRepresentation;
-import de.featjar.formula.analysis.sat4j.AnalyzeCoreDeadVariablesSAT4J;
-import de.featjar.formula.analysis.value.ComputeValueRepresentation;
+import de.featjar.formula.analysis.bool.ComputeBooleanRepresentationOfCNFFormula;
+import de.featjar.formula.analysis.sat4j.ComputeCoreDeadVariablesSAT4J;
+import de.featjar.formula.analysis.value.ComputeValueRepresentationOfAssignment;
 import de.featjar.formula.analysis.value.ValueAssignment;
-import de.featjar.formula.structure.formula.Formula;
+import de.featjar.formula.structure.formula.IFormula;
 import de.featjar.formula.transformer.ComputeCNFFormula;
 import de.featjar.formula.transformer.ComputeNNFFormula;
 
-import static de.featjar.base.data.Computations.*;
-import static de.featjar.base.data.Computations.async;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import static de.featjar.base.computation.Computations.*;
 
 public class CoreDeadAnalysis {
-    public String coreFeatures(Formula formula) {
-        // get formula as boolean representation
-        var booleanRepresentation =
-                async(formula)
-                        .map(ComputeNNFFormula::new)
-                        .map(ComputeCNFFormula::new)
-                        .map(ComputeBooleanRepresentation.OfFormula::new);
-        // get boolean Clause list from boolean representation
+    public Set<String> coreFeatures(IFormula formula) {
+        var booleanRepresentation = async(formula)
+                .map(ComputeNNFFormula::new)
+                .map(ComputeCNFFormula::new)
+                .map(ComputeBooleanRepresentationOfCNFFormula::new);
         var booleanClauseList = getKey(booleanRepresentation);
-        // get variable map
         var variableMap = getValue(booleanRepresentation);
-        // create analysis
-        var result = new AnalyzeCoreDeadVariablesSAT4J().setInput(booleanClauseList);
+        var analysis = new ComputeCoreDeadVariablesSAT4J(booleanClauseList);
+
         //  parse result
-        Computation<ValueAssignment> assignmentComputation = async(result, variableMap).map(ComputeValueRepresentation.OfAssignment::new);
-        return assignmentComputation.compute().get().get().print();
+        ComputeValueRepresentationOfAssignment result = new ComputeValueRepresentationOfAssignment(analysis, variableMap);
+        String core = result.computeResult().get().print();
+        String[] coreArr = core.split(", ");
+        Set<String> resultCore = new HashSet<>();
+        Arrays.stream(coreArr).forEach(feature -> {
+            if(!(feature.charAt(0)=='-')) {
+                resultCore.add(feature);
+            }
+        });
+        return resultCore;
     }
 }

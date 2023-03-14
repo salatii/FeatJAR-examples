@@ -1,9 +1,9 @@
 package de.featjar.examples.anlysis.ComplexExample;
 
-import de.featjar.base.cli.CommandLineInterface;
+import de.featjar.base.cli.Commands;
 import de.featjar.base.extension.ExtensionManager;
 import de.featjar.formula.io.FormulaFormats;
-import de.featjar.formula.structure.formula.Formula;
+import de.featjar.formula.structure.formula.IFormula;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,9 +15,9 @@ public class Commandline {
     protected static final ExtensionManager extensionManager = new ExtensionManager();
     private static Set<String> MODEL_NAMES = new HashSet<>();
 
-    private static Formula loadModel(String filepath) {
+    private static IFormula loadModel(String filepath) {
         // load featuremodel from file
-        return CommandLineInterface.loadFile(filepath, extensionManager.getExtensionPoint(FormulaFormats.class).get()).orElseThrow();
+        return Commands.loadFile(filepath, extensionManager.getExtensionPoint(FormulaFormats.class).get()).orElseThrow();
     }
 
     private static String getPathFromResource(String resource) {
@@ -35,7 +35,7 @@ public class Commandline {
         }
     }
 
-    private static String selectAnalyse(Formula formula) {
+    private static String selectAnalyse(IFormula formula) {
         System.out.println("Choose one of the following analysis you want to perform:");
         System.out.println("coredead, isvoid");
         String analyze = "";
@@ -44,7 +44,7 @@ public class Commandline {
             analyze = scanner.nextLine().toLowerCase().trim();
             switch (analyze) {
                 case "coredead":
-                    return new CoreDeadAnalysis().coreFeatures(formula);
+                    return new CoreDeadAnalysis().coreFeatures(formula).toString();
                 case "isvoid":
                     return String.valueOf(new IsVoidAnalysis().isVoid(formula));
                 default:
@@ -83,7 +83,7 @@ public class Commandline {
             int chosen = scanner.nextInt();
             if(featureModelMap.containsKey(chosen)) {
                 String path = featureModelMap.get(chosen);
-                Formula formula = loadModel(getPathFromResource(path));
+                IFormula formula = loadModel(getPathFromResource(path));
                 System.out.println("Formula of " + featureModelMap.get(chosen) + ": " + formula.printParseable());
                 System.out.println();
                 System.out.println(selectAnalyse(formula));

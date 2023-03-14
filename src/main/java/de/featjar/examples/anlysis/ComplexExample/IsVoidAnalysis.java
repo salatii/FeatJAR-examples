@@ -1,26 +1,25 @@
 package de.featjar.examples.anlysis.ComplexExample;
 
-import de.featjar.formula.analysis.bool.ComputeBooleanRepresentation;
-import de.featjar.formula.analysis.sat4j.AnalyzeHasSolutionSAT4J;
-import de.featjar.formula.structure.formula.Formula;
+import de.featjar.base.computation.Computations;
+import de.featjar.base.computation.ComputePresence;
+import de.featjar.formula.analysis.bool.BooleanSolution;
+import de.featjar.formula.analysis.bool.ComputeBooleanRepresentationOfCNFFormula;
+import de.featjar.formula.analysis.sat4j.ComputeSolutionSAT4J;
+import de.featjar.formula.structure.formula.IFormula;
 import de.featjar.formula.transformer.ComputeCNFFormula;
 import de.featjar.formula.transformer.ComputeNNFFormula;
 
-import static de.featjar.base.data.Computations.async;
-import static de.featjar.base.data.Computations.getKey;
-
 public class IsVoidAnalysis {
-    public boolean isVoid(Formula formula) {
-        // get formula as boolean representation
-        var booleanRepresentation =
-                async(formula)
-                        .map(ComputeNNFFormula::new)
-                        .map(ComputeCNFFormula::new)
-                        .map(ComputeBooleanRepresentation.OfFormula::new);
-        // get boolean Clause list from boolean representation
-        var booleanClauseList = getKey(booleanRepresentation);
-        // create analysis
-        var result = new AnalyzeHasSolutionSAT4J().setInput(booleanClauseList);
-        return !result.compute().get().get();
+    public boolean isVoid(IFormula formula) {
+        boolean isvoid = !Computations.async(formula)
+                .map(ComputeNNFFormula::new)
+                .map(ComputeCNFFormula::new)
+                .map(ComputeBooleanRepresentationOfCNFFormula::new)
+                .map(Computations::getKey)
+                .map(ComputeSolutionSAT4J::new)
+                .map(ComputePresence<BooleanSolution>::new)
+                .get()
+                .get();
+        return isvoid;
     }
 }
